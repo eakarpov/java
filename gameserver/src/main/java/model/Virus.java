@@ -8,20 +8,20 @@ import java.awt.Color;
 
 import static model.GameConstants.INITIAL_VIRUS_MASS;
 
-public class Virus {
+public class Virus extends GameUnit {
 
     @NotNull
     private static final Logger log = LogManager.getLogger(Virus.class);
-    @NotNull
-    private Color color = Color.GREEN;
-    @NotNull
-    private Location location;
-    private int mass = INITIAL_VIRUS_MASS;
-    private double speed;
 
     public Virus(@NotNull Location location, double speed) {
-        this.speed = speed * 2;
-        this.location = location;
+        super(location, speed * 2, INITIAL_VIRUS_MASS);
+        if (log.isInfoEnabled()) {
+            log.info(toString() + " created");
+        }
+    }
+
+    public Virus(@NotNull Location location) {
+        super(location, INITIAL_VIRUS_MASS);
         if (log.isInfoEnabled()) {
             log.info(toString() + " created");
         }
@@ -30,10 +30,11 @@ public class Virus {
     @Override
     public String toString() {
         return "Virus{" +
-                "color=" + color +
-                ", location=" + location +
-                ", mass=" + mass +
-                ", speed=" + speed +
+                "color=" + this.getColor() +
+                ", location=" + this.getLocation() +
+                ", mass=" + this.getMass() +
+                ", speed=" + this.getSpeed() +
+                ", radius=" + this.getRadius() +
                 '}';
     }
 }

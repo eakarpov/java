@@ -5,10 +5,10 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.Color;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static model.GameConstants.INITIAL_CELL_MASS;
+import static model.GameConstants.MAX_CELLS_AMOUNT;
 
 /**
  * Server player avatar
@@ -23,12 +23,10 @@ public class Player {
     @NotNull
     private String name;
     @NotNull
-    private Set<Cell> cells = new HashSet<>(GameConstants.MAX_CELLS);
-    @NotNull
-    private int cellsEaten;
-    private int foodEaten;
+    private Set<Cell> cells = new HashSet<>(MAX_CELLS_AMOUNT);
+    private int cellsEaten = 0;
+    private int foodEaten = 0;
     private long initialTime;
-    private int mass;
     private int score = 16;
 
     /**
@@ -38,23 +36,35 @@ public class Player {
      */
     public Player(@NotNull String name) {
         this.name = name;
-        this.mass = INITIAL_CELL_MASS;
-        this.foodEaten = 0;
-        this.cellsEaten = 0;
         this.initialTime = System.currentTimeMillis();
-        Cell startingCell = new Cell(Color.BLUE, new Location(23, 4353));
+        Cell startingCell = new Cell(new Location(),name,0);
         this.cells.add(startingCell);
         if (log.isInfoEnabled()) {
             log.info(toString() + " created");
         }
     }
 
+    @NotNull
+    public Set<Cell> getCells () {
+        return this.cells;
+    }
+
+    @NotNull
+    public int getMass() {
+        int mass = 0;
+        for (Cell elem :
+                this.getCells()) {
+            mass += elem.getMass();
+        }
+        return mass;
+    }
+
     @Override
     public String toString() {
         return "Player{" +
                 "name='" + name + '\'' +
-                ", cells=" + cells +
-                ", mass=" + mass +
+                ", cells=" + this.getCells() +
+                ", mass=" + this.getMass() +
                 ", foodEaten=" + foodEaten +
                 ", cellsEaten=" + cellsEaten +
                 ", initialTime=" + initialTime +
