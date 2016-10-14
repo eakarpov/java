@@ -8,9 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.List;
 
-import static model.GameConstants.INITIAL_FOODS_AMOUNT;
-import static model.GameConstants.INITIAL_VIRUSES_AMOUNT;
-
 /**
  * Creates {@link IGameSession} for single player
  *
