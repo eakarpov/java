@@ -6,10 +6,9 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.List;
 
 /**
- * Creates {@link IGameSession} for single player
+ * Creates {@link GameSession} for single player
  *
  * @author Alpi
  */
@@ -20,7 +19,7 @@ public class SinglePlayerMatchMaker implements MatchMaker {
     private final List<GameSession> activeGameSessions = new ArrayList<>();
 
     /**
-     * Creates new IGameSession for single player
+     * Creates new GameSession for single player
      *
      * @param player single player
      */
@@ -35,7 +34,7 @@ public class SinglePlayerMatchMaker implements MatchMaker {
     }
 
     @NotNull
-    public List<IGameSession> getActiveGameSessions() {
+    public List<GameSession> getActiveGameSessions() {
         return new ArrayList<>(activeGameSessions);
     }
 

@@ -1,13 +1,13 @@
 package matchmaker;
 
-import model.IGameSession;
+import model.GameSession;
 import model.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 /**
- * Provides (searches or creates) {@link IGameSession} for {@link Player}
+ * Provides (searches or creates) {@link GameSession} for {@link Player}
  *
  * @author Alpi
  */
@@ -22,5 +22,5 @@ public interface MatchMaker {
    * @return Currently open game sessions
    */
   @NotNull
-  List<IGameSession> getActiveGameSessions();
+  List<GameSession> getActiveGameSessions();
 }
