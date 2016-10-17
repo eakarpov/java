@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -28,7 +29,7 @@ public class RestClient implements IRestClient {
      * !!NOTE!! Registrations expire on server shutdown.
      *
      * @param user - username
-     * @param password
+     * @param password - password
      * @return true if successfully registered
      */
     @Override
@@ -46,13 +47,25 @@ public class RestClient implements IRestClient {
                 .addHeader("content-type", "application/x-www-form-urlencoded")
                 .build();
 
-        return makeRequest(request);
+        try {
+            Response response = client.newCall(request).execute();
+            boolean result = response.isSuccessful();
+            if (result) {
+                log.info("You have been registered.");
+            } else {
+                log.warn("You can't be registered with such values.");
+            }
+            return result;
+        } catch (IOException e) {
+            log.warn("Something went wrong in the request.", e);
+            return false;
+        }
     }
 
     /**
      *
      * @param user - username
-     * @param password
+     * @param password - password
      * @return token
      */
     @Override
@@ -71,9 +84,11 @@ public class RestClient implements IRestClient {
 
         try {
             Response response = client.newCall(request).execute();
-            return Long.parseLong(response.body().string());
+            Long result = Long.parseLong(response.body().string());
+            log.info("You have been logged in.");
+            return result;
         } catch (NumberFormatException e) {
-            log.warn("Login is not correct.", e);
+            log.warn("Login is not correct.");
             return null;
         } catch (IOException e) {
             log.warn("Something went wrong in login.", e);
@@ -99,13 +114,25 @@ public class RestClient implements IRestClient {
                 .addHeader("authorization","Bearer " + token)
                 .addHeader("content-type", "application/x-www-form-urlencoded")
                 .build();
-        return makeRequest(request);
+        try {
+            Response response = client.newCall(request).execute();
+            boolean result = response.isSuccessful();
+            if (result) {
+                log.info("You have been logged out.");
+            } else {
+                log.warn("Your token is not valid.");
+            }
+            return result;
+        } catch (IOException e) {
+            log.warn("Something went wrong in the request.", e);
+            return false;
+        }
     }
 
     /**
      *
      * @param token - token
-     * @param userName - token
+     * @param userName - user's name
      * @return boolean
      */
     @Override
@@ -122,16 +149,34 @@ public class RestClient implements IRestClient {
                 .addHeader("authorization","Bearer " + token)
                 .addHeader("content-type", "application/x-www-form-urlencoded")
                 .build();
-        return makeRequest(request);
+        try {
+            Response response = client.newCall(request).execute();
+            boolean result = response.isSuccessful();
+            if (result) {
+                log.info("The name was changed successfully!");
+            } else {
+                log.warn("Your token is not valid.");
+            }
+            return result;
+        } catch (IOException e) {
+            log.warn("Something went wrong in the request.", e);
+            return false;
+        }
     }
 
+    /**
+     *
+     * @param token - token
+     * @return userList
+     */
     @Override
     public List getUsers(Long token) {
+
         MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
         RequestBody body = RequestBody.create(
                 mediaType,""
         );
-        String requestUrl = SERVICE_URL + "/auth/users";
+        String requestUrl = SERVICE_URL + "/api/users";
         Request request = new Request.Builder()
                 .url(requestUrl)
                 .post(body)
@@ -140,27 +185,17 @@ public class RestClient implements IRestClient {
                 .build();
         try {
             Response response = client.newCall(request).execute();
-            String usersJson = response.body().string();
-            return readJson(usersJson);
+            if (response.code() == 200) {
+                String usersJson = response.body().string();
+                log.info("Json string - {}", usersJson);
+                return UserStore.readJsonNames(usersJson);
+            } else {
+                log.warn("Your token is not valid.");
+                return null;
+            }
         } catch (IOException e) {
             log.warn("Something went wrong in the request.", e);
             return null;
         }
-    }
-
-    private boolean makeRequest(Request request) {
-        try {
-            Response response = client.newCall(request).execute();
-            return response.isSuccessful();
-        } catch (IOException e) {
-            log.warn("Something went wrong in the request.", e);
-            return false;
-        }
-    }
-
-    private List readJson(String json) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
-        return mapper.readValue(json, List.class);
     }
 }

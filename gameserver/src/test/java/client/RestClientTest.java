@@ -1,7 +1,8 @@
 package client;
 
-import org.junit.Assert;
-import org.junit.Test;
+import model.UserStore;
+import org.junit.*;
+import server.api.ApiServlet;
 
 import java.util.List;
 
@@ -9,36 +10,70 @@ import static org.junit.Assert.*;
 
 
 public class RestClientTest {
-    private IRestClient client = new RestClient();
-    private Long token;
 
-    @Test
-    public void register() throws Exception {
-        String user = "test";
-        String password = "test";
-        assertTrue(client.register(user, password));
+    private static IRestClient client = new RestClient();
+    private Long token;
+    private static String user = "testok";
+    private static String password = "test";
+    private static String user2 = "testerok";
+    private static String password2 = "test";
+
+    @BeforeClass
+    public static void start() throws Exception {
+        client.register(user, password);
+        client.register(user2, password2);
+    }
+
+    @AfterClass
+    public static void stop() {
+
     }
 
     @Test
     public void loginRegistered() throws Exception {
-        token = client.login("test", "test");
+        token = client.login(user, password);
         assertNotNull(token);
         System.out.print(token);
     }
 
     @Test
+    public void checkDifferentTokensOfDifferentUsers() {
+        token = client.login(user, password);
+        Long token2 = client.login(user2, password2);
+        assertNotEquals(token,token2);
+    }
+
+    @Test
+    public void checkTokenStabilityForOneUser() {
+        token = client.login(user, password);
+        Long token2 = client.login(user, password);
+        assertEquals(token, token2);
+    }
+
+    @Test
     public void loginNotRegistered() throws Exception {
-        token = client.login("tester", "test");
+        token = client.login("user", "password");
         assertNull(token);
-        System.out.print(token);
+    }
+
+    @Test
+    public void getUsersProper() throws Exception {
+        token =  client.login(user, password);
+        List result = client.getUsers(token);
+        assertNotNull(result);
+    }
+
+    @Test
+    public void getUsersNotProper() throws Exception {
+        List result = client.getUsers(7234726354L);
+        assertNull(result);
     }
 
     @Test
     public void changeNameProper() throws Exception {
-        token =  client.login("test", "test");
+        token =  client.login(user, password);
         boolean result = client.changeName(token, "tester");
-        boolean result2 = client.changeName(token, "test");
-        System.out.print(result);
+        boolean result2 = client.changeName(token, user);
         assertTrue(result2);
         assertTrue(result);
     }
@@ -50,20 +85,10 @@ public class RestClientTest {
     }
 
     @Test
-    public void getUsers() throws Exception {
-        token =  client.login("test", "test");
-        List result = client.getUsers(token);
-        for(int i = 0; i < result.size(); i++) {
-            System.out.print(result.get(i));
-        }
-        assertNotNull(result);
-    }
-
-    @Test
     public void logoutProper() throws Exception {
-        token =  client.login("test", "test");
+        token =  client.login(user, password);
         boolean result = client.logout(token);
-        System.out.print(result);
+        assertTrue(result);
     }
 
     @Test
