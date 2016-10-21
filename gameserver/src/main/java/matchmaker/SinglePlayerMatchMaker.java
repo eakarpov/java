@@ -12,7 +12,7 @@ import java.util.*;
  *
  * @author Alpi
  */
-public class SinglePlayerMatchMaker implements MatchMaker {
+public class SinglePlayerMatchMaker implements IMatchMaker {
     @NotNull
     private final Logger log = LogManager.getLogger(SinglePlayerMatchMaker.class);
     @NotNull
@@ -24,13 +24,19 @@ public class SinglePlayerMatchMaker implements MatchMaker {
      * @param player single player
      */
     @Override
-    public void joinGame(@NotNull Player player) {
+    public GameSession joinGame(@NotNull Player player) {
         GameSession newGameSession =  new GameSession();
         activeGameSessions.add(newGameSession);
         newGameSession.join(player);
         if (log.isInfoEnabled()) {
             log.info(player + " joined " + newGameSession);
         }
+        return newGameSession;
+    }
+
+    @Override
+    public boolean leaveGame(@NotNull Player player) {
+        return true;
     }
 
     @NotNull

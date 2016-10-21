@@ -26,7 +26,6 @@ public class RestClient implements IRestClient {
     /***
      * Registers user
      *
-     * !!NOTE!! Registrations expire on server shutdown.
      *
      * @param user - username
      * @param password - password

@@ -1,12 +1,14 @@
 package matchMakerTests;
 
-import matchmaker.MatchMaker;
+import matchmaker.IMatchMaker;
 import matchmaker.SinglePlayerMatchMaker;
-import model.GameConstants;
 import model.Player;
+import model.User;
 import org.junit.Test;
 
 import org.junit.Assert;
+
+import static sun.audio.AudioPlayer.player;
 
 /**
  * @author Alpi
@@ -14,8 +16,9 @@ import org.junit.Assert;
 public class SinglePlayerMatchMakerTest {
   @Test
   public void testSinglePlayerGameSessionCreated() {
-    MatchMaker singlePlayerMatchMaker = new SinglePlayerMatchMaker();
-    Player player = new Player("Arkady");
+    IMatchMaker singlePlayerMatchMaker = new SinglePlayerMatchMaker();
+    User user = new User("Arkady", "1234");
+    Player player = new Player(user.getUserName(), user);
     singlePlayerMatchMaker.joinGame(player);
 
     Assert.assertEquals(1, singlePlayerMatchMaker.getActiveGameSessions().size());

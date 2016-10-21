@@ -24,11 +24,6 @@ public class RestClientTest {
         client.register(user2, password2);
     }
 
-    @AfterClass
-    public static void stop() {
-
-    }
-
     @Test
     public void loginRegistered() throws Exception {
         token = client.login(user, password);

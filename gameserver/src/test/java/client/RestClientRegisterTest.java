@@ -25,7 +25,8 @@ public class RestClientRegisterTest {
         assertTrue(client.register(user, password));
     }
 
-    @Test void registerExistedValues() {
+    @Test
+    public void registerExistedValues() {
         String user = "tester";
         String password = "test";
         assertFalse(client.register(user, password));
